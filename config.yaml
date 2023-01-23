@@ -1,0 +1,4 @@
+{
+  port: ":8080",
+  db_url: "postgres://postgres:test@localhost:5432/LinkGenerator"
+}
