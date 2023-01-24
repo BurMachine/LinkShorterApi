@@ -1,0 +1,12 @@
+###
+
+POST localhost:8080/generate
+Content-Type: application/json
+
+{
+  "url": "yandex.ru",
+}
+
+###
+
+GET localhost:8080/get_original

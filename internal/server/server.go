@@ -41,6 +41,12 @@ func (s *Server) Run() error {
 	err = mux.HandlePath("POST", "/generate", s.httpHandles.GenerateShortLink)
 	if err != nil {
 		err = fmt.Errorf("handler registration error: %v", err)
+		return err
+	}
+	err = mux.HandlePath("GET", "/get_original", s.httpHandles.GetOriginalUrl)
+	if err != nil {
+		err = fmt.Errorf("handler registration error: %v", err)
+		return err
 	}
 	// Start HTTP server (and proxy calls to gRPC server endpoint)
 	return http.ListenAndServe(s.conf.AddrHttp, mux)
