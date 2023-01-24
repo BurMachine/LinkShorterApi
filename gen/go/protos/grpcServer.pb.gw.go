@@ -2,11 +2,11 @@
 // source: protos/grpcServer.proto
 
 /*
-Package buf_ is a reverse proxy.
+Package __ is a reverse proxy.
 
 It translates gRPC into RESTful JSON APIs.
 */
-package buf_
+package __
 
 import (
 	"context"

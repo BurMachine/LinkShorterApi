@@ -2,8 +2,10 @@ package server
 
 import (
 	"burmachine/LinkGenerator/internal/config"
+	httpHandlers "burmachine/LinkGenerator/internal/handlers/http"
 	"context"
 	"flag"
+	"fmt"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -13,14 +15,15 @@ import (
 )
 
 type Server struct {
-	conf config.Conf
+	httpHandles *httpHandlers.HttpHandlers
+	conf        config.Conf
 }
 
 func NewServerWithConfiguration(conf config.Conf) *Server {
 	return &Server{conf: conf}
 }
 
-func (s Server) Run() error {
+func (s *Server) Run() error {
 	ctx := context.Background()
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
@@ -35,7 +38,10 @@ func (s Server) Run() error {
 	if err != nil {
 		return err
 	}
-
+	err = mux.HandlePath("POST", "/generate", s.httpHandles.GenerateShortLink)
+	if err != nil {
+		err = fmt.Errorf("handler registration error: %v", err)
+	}
 	// Start HTTP server (and proxy calls to gRPC server endpoint)
 	return http.ListenAndServe(s.conf.AddrHttp, mux)
 }

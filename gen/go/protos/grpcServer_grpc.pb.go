@@ -4,7 +4,7 @@
 // - protoc             (unknown)
 // source: protos/grpcServer.proto
 
-package buf_
+package __
 
 import (
 	context "context"

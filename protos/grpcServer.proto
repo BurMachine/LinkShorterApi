@@ -2,7 +2,9 @@ syntax = "proto3";
 
 package grpcHandlers;
 
-option go_package = "brew install bufbuild/buf/buf./";
+option go_package = "./";
+
+//import "google/api/annotations.proto";
 
 service ServiceName {
   rpc GenerateShortLink(RequestLink) returns (ResponseLink);
