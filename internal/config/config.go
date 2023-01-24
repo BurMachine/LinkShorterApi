@@ -8,8 +8,9 @@ import (
 )
 
 type Conf struct {
-	Addr  string `yaml:"port"`
-	DbUrl string `yaml:"db_url"`
+	AddrHttp string `yaml:"port"`
+	AddrGrpc string `yaml:"port_grpc"`
+	DbUrl    string `yaml:"db_url"`
 }
 
 func NewConfigStruct() *Conf {

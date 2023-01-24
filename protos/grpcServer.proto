@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package grpcHandlers;
+
+option go_package = "brew install bufbuild/buf/buf./";
+
+service ServiceName {
+  rpc GenerateShortLink(RequestLink) returns (ResponseLink);
+  rpc GetOriginalLink(RequestLink) returns (ResponseLink);
+}
+
+message RequestLink {
+  string link = 1;
+}
+
+message ResponseLink {
+  string link = 1;
+}
