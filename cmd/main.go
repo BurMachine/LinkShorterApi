@@ -2,12 +2,13 @@ package main
 
 import (
 	"burmachine/LinkGenerator/internal/config"
-	"burmachine/LinkGenerator/internal/interfaces"
+	httpHandlers "burmachine/LinkGenerator/internal/handlers/http"
 	server2 "burmachine/LinkGenerator/internal/server"
-	"burmachine/LinkGenerator/internal/storage/memory"
-	"burmachine/LinkGenerator/internal/storage/postgres"
+	"burmachine/LinkGenerator/internal/storage"
 	"burmachine/LinkGenerator/pkg/flagsHandling"
 	"flag"
+	"fmt"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"log"
 )
 
@@ -28,18 +29,32 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	var storage interfaces.Storage
+	var storageS storage.ServiceStorage
 	if storageType == "inmemory" {
-		storage = memory.NewStorageInit()
+		storageS = storage.NewInMemoryStorageInit()
 	} else if storageType == "postgres" {
-		storage, err = postgres.NewStorageInit(*conf)
+		storageS, err = storage.NewStorageInit(*conf)
 		if err != nil {
 			log.Fatalln(err)
 		}
 	}
-	println(&storage)
 
 	server := server2.NewServerWithConfiguration(*conf)
+	mux := runtime.NewServeMux()
+	server.Mux = mux
+
+	var handlersHttp httpHandlers.HttpHandlers
+	handlersHttp.Storage = &storageS
+
+	err = mux.HandlePath("POST", "/generate", handlersHttp.GenerateShortLink)
+	if err != nil {
+		err = fmt.Errorf("handler registration error: %v", err)
+	}
+	err = mux.HandlePath("GET", "/", handlersHttp.GetOriginalUrl)
+	if err != nil {
+		err = fmt.Errorf("handler registration error: %v", err)
+	}
+
 	err = server.Run()
 	if err != nil {
 		log.Fatalln(err)

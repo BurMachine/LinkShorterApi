@@ -4,9 +4,17 @@ POST localhost:8080/generate
 Content-Type: application/json
 
 {
-  "url": "yandex.ru",
+  "url": "yandex.ru"
+}
+###
+
+POST localhost:8080/generate
+Content-Type: application/json
+
+{
+  "url": "google.ru"
 }
 
 ###
 
-GET localhost:8080/get_original
+GET localhost:8080/?short=eZZHnmHDOc

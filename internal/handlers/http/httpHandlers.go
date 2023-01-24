@@ -1,10 +1,10 @@
 package httpHandlers
 
 import (
-	"golang.org/x/mod/sumdb/storage"
+	"burmachine/LinkGenerator/internal/storage"
 )
 
 type HttpHandlers struct {
 	//server  *server2.Server
-	storage *storage.Storage
+	Storage *storage.ServiceStorage
 }
