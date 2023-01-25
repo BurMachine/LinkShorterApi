@@ -3,6 +3,8 @@ package database
 import (
 	"context"
 	"fmt"
+	"os"
+
 	"github.com/jackc/pgx/v5"
 )
 
@@ -12,7 +14,8 @@ var schema = `CREATE TABLE IF NOT EXISTS links (
 );`
 
 func InitConnection(url string) (*pgx.Conn, error) {
-	conn, err := pgx.Connect(context.Background(), url)
+	dsn := os.Getenv("POSTGRES_URI")
+	conn, err := pgx.Connect(context.Background(), dsn)
 	if err != nil {
 		return conn, err
 	}
