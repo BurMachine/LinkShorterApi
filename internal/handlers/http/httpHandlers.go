@@ -5,6 +5,5 @@ import (
 )
 
 type HttpHandlers struct {
-	//server  *server2.Server
 	Storage *storage.ServiceStorage
 }

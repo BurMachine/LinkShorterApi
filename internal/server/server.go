@@ -19,7 +19,8 @@ type Server struct {
 	httpHandles *httpHandlers.HttpHandlers
 	conf        config.Conf
 	Mux         *runtime.ServeMux
-	grpcHadles  grpcHandlers.GrpcHandlers
+	GrpcServ    *grpc.Server
+	GrpcHadles  *grpcHandlers.GrpcHandlers
 }
 
 func NewServerWithConfiguration(conf config.Conf) *Server {
@@ -33,18 +34,12 @@ func (s *Server) Run(ctx context.Context) error {
 
 	grpcServerEndpoint := flag.String("grpc-server-endpoint", s.conf.AddrGrpc, "gRPC server endpoint")
 
-	// opts := []grpc.ServerOption{insecure.()}
-	// err := gw.RegisterServiceNameHandlerFromEndpoint(ctx, s.Mux, *grpcServerEndpoint, opts)
-	// if err != nil {
-	// 	return err
-	// }
-
 	lis, err := net.Listen("tcp", *grpcServerEndpoint)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 	grpcServer := grpc.NewServer()
-	gw.RegisterServiceNameServer(grpcServer, &s.grpcHadles)
+	gw.RegisterServiceNameServer(grpcServer, s.GrpcHadles)
 	grpcServer.Serve(lis)
 
 	// Start HTTP server (and proxy calls to gRPC server endpoint)

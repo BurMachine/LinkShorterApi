@@ -1,16 +1,19 @@
 package main
 
 import (
+	"flag"
+	"fmt"
+	"log"
+
 	"burmachine/LinkGenerator/internal/config"
+	grpcHandlers2 "burmachine/LinkGenerator/internal/handlers/grpc"
 	httpHandlers "burmachine/LinkGenerator/internal/handlers/http"
 	server2 "burmachine/LinkGenerator/internal/server"
 	"burmachine/LinkGenerator/internal/storage"
 	"burmachine/LinkGenerator/pkg/flagsHandling"
-	"flag"
-	"fmt"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"golang.org/x/net/context"
-	"log"
+	"google.golang.org/grpc"
 )
 
 func main() {
@@ -39,8 +42,11 @@ func main() {
 			log.Fatalln(err)
 		}
 	}
-
+	grpcHandlers := &grpcHandlers2.GrpcHandlers{Storage: &storageS}
+	grpcServ := grpc.NewServer()
 	server := server2.NewServerWithConfiguration(*conf)
+	server.GrpcHadles = grpcHandlers
+	server.GrpcServ = grpcServ
 	mux := runtime.NewServeMux()
 	server.Mux = mux
 
@@ -55,6 +61,7 @@ func main() {
 	if err != nil {
 		err = fmt.Errorf("handler registration error: %v", err)
 	}
+
 	ctx := context.Background()
 	err = server.Run(ctx)
 	if err != nil {

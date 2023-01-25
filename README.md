@@ -46,3 +46,12 @@ Content-Type: application/json
 Для того чтобы использовать сервис локально нужно поднять `PostgreSQL` на порту `5432`.
 Для выбора хранилища использовать флаг --storage=<inmemory/postgres>.
 
+`go run cmd/main.go --storage=inmemory`
+
+### Тесты gRPC
+
+Тестировал через утилиту bloomrpc:
+
+![Image alt](pics/photo_5372816273127360440_y.jpg)
+![Image alt](pics/photo_5372816273127360441_y.jpg)
+![Image alt](pics/photo_5372816273127360442_y.jpg)

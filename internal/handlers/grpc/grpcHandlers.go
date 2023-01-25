@@ -2,11 +2,10 @@ package grpcHandlers
 
 import (
 	pb "burmachine/LinkGenerator/gen/go/protos"
-	"golang.org/x/mod/sumdb/storage"
+	"burmachine/LinkGenerator/internal/storage"
 )
 
 type GrpcHandlers struct {
 	pb.UnimplementedServiceNameServer
-	// server  *server2.Server
-	storage *storage.Storage
+	Storage *storage.ServiceStorage
 }
