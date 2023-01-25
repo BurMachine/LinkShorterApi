@@ -6,6 +6,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"sync"
 
 	gw "burmachine/LinkGenerator/gen/go/protos"
 	"burmachine/LinkGenerator/internal/config"
@@ -21,16 +22,14 @@ type Server struct {
 	Mux         *runtime.ServeMux
 	GrpcServ    *grpc.Server
 	GrpcHadles  *grpcHandlers.GrpcHandlers
+	ErrorChan   chan error
 }
 
 func NewServerWithConfiguration(conf config.Conf) *Server {
 	return &Server{conf: conf}
 }
 
-func (s *Server) Run(ctx context.Context) error {
-	// ctx := context.Background()
-	// ctx, cancel := context.WithCancel(ctx)
-	// defer cancel()
+func (s *Server) Run(ctx context.Context, wg *sync.WaitGroup) error {
 
 	grpcServerEndpoint := flag.String("grpc-server-endpoint", s.conf.AddrGrpc, "gRPC server endpoint")
 
@@ -40,8 +39,21 @@ func (s *Server) Run(ctx context.Context) error {
 	}
 	grpcServer := grpc.NewServer()
 	gw.RegisterServiceNameServer(grpcServer, s.GrpcHadles)
-	grpcServer.Serve(lis)
+	go func(ctx context.Context) {
+		err = grpcServer.Serve(lis)
+		if err != nil {
+			s.ErrorChan <- err
+		}
+		wg.Done()
+	}(ctx)
+	go func(ctx context.Context) {
+		err = http.ListenAndServe(s.conf.AddrHttp, s.Mux)
+		if err != nil {
+			s.ErrorChan <- err
+		}
+		wg.Done()
+	}(ctx)
 
-	// Start HTTP server (and proxy calls to gRPC server endpoint)
-	return http.ListenAndServe(s.conf.AddrHttp, s.Mux)
+	log.Println("[SERVER] - launched")
+	return nil
 }

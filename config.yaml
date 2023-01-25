@@ -1,5 +1,5 @@
 {
   port: ":8080",
-  port_grpc: ":9000",
+  port_grpc: ":9090",
   db_url: "postgres://postgres:test@localhost:5432/LinkGenerator"
 }

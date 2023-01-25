@@ -17,7 +17,10 @@ func InitConnection(url string) (*pgx.Conn, error) {
 	dsn := os.Getenv("POSTGRES_URI")
 	conn, err := pgx.Connect(context.Background(), dsn)
 	if err != nil {
-		return conn, err
+		conn, err = pgx.Connect(context.Background(), url)
+		if err != nil {
+			return conn, err
+		}
 	}
 	_, err = conn.Exec(context.Background(), schema)
 	if err != nil {

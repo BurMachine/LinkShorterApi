@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"sync"
 
 	"burmachine/LinkGenerator/internal/config"
 	grpcHandlers2 "burmachine/LinkGenerator/internal/handlers/grpc"
@@ -62,9 +63,21 @@ func main() {
 		err = fmt.Errorf("handler registration error: %v", err)
 	}
 
+	wg := &sync.WaitGroup{}
+	wg.Add(2)
+	errChan := make(chan error)
+	server.ErrorChan = errChan
+
+	go func(chan error) {
+		select {
+		case <-errChan:
+			log.Println("[SERVER] - running error")
+		}
+	}(errChan)
 	ctx := context.Background()
-	err = server.Run(ctx)
+	err = server.Run(ctx, wg)
 	if err != nil {
 		log.Fatalln(err)
 	}
+	wg.Wait()
 }
