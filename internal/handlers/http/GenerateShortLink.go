@@ -18,21 +18,25 @@ func (s *HttpHandlers) GenerateShortLink(w http.ResponseWriter, r *http.Request,
 	bodyBytes, err := io.ReadAll(r.Body)
 	if err != nil {
 		log.Println("Parse body error: ", err)
+		w.Write([]byte("400 Bad Request"))
 		return
 	}
 	err = json.Unmarshal(bodyBytes, &body)
 	if err != nil {
 		log.Println("Unmarshalling error in parsing post request's body: ", err)
+		w.Write([]byte("400 Bad Request"))
 		return
 	}
 	shortLink, err := service.GenerateLink(body.OriginalUrl)
 	if err != nil {
 		log.Println("Link generation error: ", err)
+		w.Write([]byte("400 Bad Request\nLink Exist"))
 		return
 	}
 	err = (*s.Storage).AddShortLink(body.OriginalUrl, shortLink)
 	if err != nil {
 		log.Println("Link add error: ", err)
+		w.Write([]byte("400 Bad Request\nLink Exist"))
 		return
 	}
 
