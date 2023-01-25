@@ -9,6 +9,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"golang.org/x/net/context"
 	"log"
 )
 
@@ -54,8 +55,8 @@ func main() {
 	if err != nil {
 		err = fmt.Errorf("handler registration error: %v", err)
 	}
-
-	err = server.Run()
+	ctx := context.Background()
+	err = server.Run(ctx)
 	if err != nil {
 		log.Fatalln(err)
 	}
